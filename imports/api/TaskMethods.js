@@ -14,6 +14,7 @@ Meteor.methods({
             text,
             userId: this.userId,
             createdAt: new Date(),
+            isChecked: false
         })
     },
 

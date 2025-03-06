@@ -27,3 +27,4 @@ reactive-dict
 accounts-password
 meteortesting:mocha
 quave:testing
+autopublish

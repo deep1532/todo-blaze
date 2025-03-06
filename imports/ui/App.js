@@ -39,11 +39,11 @@ Template.mainContainer.onCreated(function mainContainerOnCreated() {
     this.state.set(HIDE_COMPLETED_STRING, false);
     this.state.set('searchQuery', '');
 
-    const handler = Meteor.subscribe('tasks');
+    // const handler = Meteor.subscribe('tasks');
 
-    Tracker.autorun(() => {
-        this.state.set(IS_LOADING_STRING, !handler.ready());
-    });
+    // Tracker.autorun(() => {
+    //     // this.state.set(IS_LOADING_STRING, !handler.ready());
+    // });
 });
 
 Template.mainContainer.events({
@@ -108,6 +108,18 @@ Template.mainContainer.helpers({
         return Template.instance().state.get(HIDE_COMPLETED_STRING)
     },
 
+    totalTasks() {
+        if (!isUserLogged()) {
+            return '';
+        }
+
+        const user = getUser();
+        const userFilter = user ? { userId: user._id } : {};
+        const totalTasks = TaskCollection.find(userFilter).count();
+
+        return totalTasks ? `${totalTasks}` : '';
+    },
+
     incompleteCount() {
         if (!isUserLogged()) {
             return '';
@@ -115,7 +127,7 @@ Template.mainContainer.helpers({
 
         const hideCompleted = Template.instance().state.get(HIDE_COMPLETED_STRING);
         const filteredTasks = getFilteredTasks('', hideCompleted);
-        const incompleteTaskCount = TaskCollection.find(filteredTasks).count();
+        const incompleteTaskCount = TaskCollection.find({ ...filteredTasks, isChecked: { $ne: true } }).count();
 
         return incompleteTaskCount ? `${incompleteTaskCount}` : '';
     },
