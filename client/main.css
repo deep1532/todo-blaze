@@ -180,6 +180,7 @@ header {
 .user-info .user {
   font-weight: bold;
   margin-left: 10px;
+  margin-right: 20px;
 }
 
 .user-info .task-count {
