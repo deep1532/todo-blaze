@@ -1,0 +1,88 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "allowJs": true,
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "/*": [
+        "./*"
+      ],
+      "meteor/mongo": [
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/local_collection_driver.js",
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/collection.js",
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/connection_options.js",
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/doc_fetcher.js",
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/mongo_driver.js",
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/mongo_utils.js",
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/observe_multiplex.js",
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/oplog_observe_driver.js",
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/oplog_tailing.js",
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/oplog_v2_converter.js",
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/polling_observe_driver.js",
+        "/home/deepkumar/.meteor/packages/mongo/1.14.0/web.browser/remote_collection_driver.js"
+      ],
+      "meteor/jquery": [
+        "/home/deepkumar/.meteor/packages/jquery/3.0.0/web.browser/main.js"
+      ],
+      "meteor/reactive-var": [
+        "/home/deepkumar/.meteor/packages/reactive-var/1.0.11/web.browser/reactive-var.js"
+      ],
+      "meteor/tracker": [
+        "/home/deepkumar/.meteor/packages/tracker/1.2.0/web.browser/tracker.js"
+      ],
+      "meteor/es5-shim": [
+        "/home/deepkumar/.meteor/packages/es5-shim/4.8.0/web.browser/client.js",
+        "/home/deepkumar/.meteor/packages/es5-shim/4.8.0/web.browser/console.js",
+        "/home/deepkumar/.meteor/packages/es5-shim/4.8.0/web.browser/cordova.js",
+        "/home/deepkumar/.meteor/packages/es5-shim/4.8.0/web.browser/export_globals.js",
+        "/home/deepkumar/.meteor/packages/es5-shim/4.8.0/web.browser/import_globals.js"
+      ],
+      "meteor/ecmascript": [
+        "/home/deepkumar/.meteor/packages/ecmascript/0.16.1/web.browser/ecmascript.js"
+      ],
+      "meteor/shell-server": [
+        "/home/deepkumar/.meteor/packages/shell-server/0.5.0/web.browser/main.js",
+        "/home/deepkumar/.meteor/packages/shell-server/0.5.0/web.browser/shell-server.js"
+      ],
+      "meteor/hot-module-replacement": [
+        "/home/deepkumar/.meteor/packages/hot-module-replacement/0.5.0/web.browser/hot-api.js",
+        "/home/deepkumar/.meteor/packages/hot-module-replacement/0.5.0/web.browser/client.js",
+        "/home/deepkumar/.meteor/packages/hot-module-replacement/0.5.0/web.browser/server.js"
+      ],
+      "meteor/blaze-hot": [
+        "/home/deepkumar/.meteor/packages/blaze-hot/1.1.0/web.browser/hot.js",
+        "/home/deepkumar/.meteor/packages/blaze-hot/1.1.0/web.browser/update-templates.js"
+      ],
+      "meteor/dev-error-overlay": [
+        "/home/deepkumar/.meteor/packages/dev-error-overlay/0.1.1/web.browser/client.js"
+      ],
+      "meteor/reactive-dict": [
+        "/home/deepkumar/.meteor/packages/reactive-dict/1.3.0/web.browser/migration.js",
+        "/home/deepkumar/.meteor/packages/reactive-dict/1.3.0/web.browser/reactive-dict.js"
+      ],
+      "meteor/accounts-password": [
+        "/home/deepkumar/.meteor/packages/accounts-password/2.2.0/web.browser/password_client.js",
+        "/home/deepkumar/.meteor/packages/accounts-password/2.2.0/web.browser/email_templates.js",
+        "/home/deepkumar/.meteor/packages/accounts-password/2.2.0/web.browser/password_server.js"
+      ],
+      "meteor/meteortesting:mocha": [
+        "/home/deepkumar/.meteor/packages/meteortesting_mocha/2.1.0/web.browser/client.js",
+        "/home/deepkumar/.meteor/packages/meteortesting_mocha/2.1.0/web.browser/browser-shim.js",
+        "/home/deepkumar/.meteor/packages/meteortesting_mocha/2.1.0/web.browser/prepForHTMLReporter.js",
+        "/home/deepkumar/.meteor/packages/meteortesting_mocha/2.1.0/web.browser/runtimeArgs.js",
+        "/home/deepkumar/.meteor/packages/meteortesting_mocha/2.1.0/web.browser/server.handleCoverage.js",
+        "/home/deepkumar/.meteor/packages/meteortesting_mocha/2.1.0/web.browser/server.js"
+      ]
+    }
+  },
+  "typeAcquisition": {
+    "include": [
+      "meteor"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    ".meteor"
+  ]
+}
