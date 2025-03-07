@@ -5,6 +5,8 @@ import './App.html';
 import './Task.js';
 import './Login.js';
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 
 
 const HIDE_COMPLETED_STRING = "hideCompleted";
@@ -14,23 +16,6 @@ const TASK_PER_PAGE = 5;
 const getUser = () => Meteor.user()
 const isUserLogged = () => !!getUser();
 
-const getFilteredTasks = (searchQuery = '', hideCompleted = false) => {
-    const user = getUser();
-
-    const hideCompletedFilter = { isChecked: { $ne: true } }
-
-    const userFilter = user ? { userId: user._id } : {}
-
-    const pendingOnlyFilter = { ...hideCompletedFilter, ...userFilter }
-
-    let filteredTasks = hideCompleted ? pendingOnlyFilter : userFilter;
-
-    if (searchQuery) {
-        filteredTasks = { ...filteredTasks, text: { $regex: searchQuery, $options: 'i' } };
-    }
-
-    return filteredTasks;
-}
 
 Template.mainContainer.onCreated(function mainContainerOnCreated() {
     this.state = new ReactiveDict();
@@ -38,18 +23,48 @@ Template.mainContainer.onCreated(function mainContainerOnCreated() {
     this.state.set('currentPage', 1);
     this.state.set(HIDE_COMPLETED_STRING, false);
     this.state.set('searchQuery', '');
+    this.state.set(IS_LOADING_STRING, true);
+    this.state.set('tasks', []);
+    this.state.set('totalPages', 1);
+    this.state.set('totalTasks', 0);
+    this.state.set('incompleteTasksCount', 0);
 
-    // const handler = Meteor.subscribe('tasks');
+    this.fetchTasks = () => {
+        const currentPage = this.state.get('currentPage');
+        const hideCompleted = this.state.get(HIDE_COMPLETED_STRING);
+        const searchQuery = this.state.get('searchQuery');
 
-    // Tracker.autorun(() => {
-    //     // this.state.set(IS_LOADING_STRING, !handler.ready());
-    // });
+        Meteor.call('tasks.getAllTasks', searchQuery, hideCompleted, currentPage, TASK_PER_PAGE, (error, result) => {
+            if (error) {
+                console.log("Error in fetching the tasks: ", error.reason);
+                this.state.set(IS_LOADING_STRING, false);
+            }
+
+            else {
+                this.state.set('tasks', result.tasks);
+                this.state.set('totalTasks', result.totalTasks);
+                this.state.set('totalPages', result.totalPages);
+                this.state.set('incompleteTasksCount', result.incompleteTasksCount);
+                this.state.set(IS_LOADING_STRING, false);
+            }
+        });
+    };
+
+    this.fetchTasks();
+
+    Tracker.autorun(() => {
+        if (Session.get('taskUpdated')) {
+            this.fetchTasks();
+            Session.set('taskUpdated', false);
+        }
+    });
 });
 
 Template.mainContainer.events({
     'click #hide-completed-button'(event, instance) {
-        const currentHideCompleted = instance.state.get(HIDE_COMPLETED_STRING)
-        instance.state.set(HIDE_COMPLETED_STRING, !currentHideCompleted)
+        const currentHideCompleted = instance.state.get(HIDE_COMPLETED_STRING);
+        instance.state.set(HIDE_COMPLETED_STRING, !currentHideCompleted);
+        instance.fetchTasks();
     },
 
     'click .user'() {
@@ -60,20 +75,17 @@ Template.mainContainer.events({
         const currentPage = instance.state.get('currentPage');
         if (currentPage > 1) {
             instance.state.set('currentPage', currentPage - 1);
+            instance.fetchTasks();
         }
     },
 
     'click .next-page'(event, instance) {
         const currentPage = instance.state.get('currentPage');
-        const searchQuery = instance.state.get('searchQuery').toLowerCase();
-        const hideCompleted = instance.state.get(HIDE_COMPLETED_STRING);
-
-        const filteredTasks = getFilteredTasks(searchQuery, hideCompleted);
-        const filteredTasksCount = TaskCollection.find(filteredTasks).count();
-        const totalPages = Math.ceil(filteredTasksCount / TASK_PER_PAGE);
+        const totalPages = instance.state.get('totalPages');
 
         if (currentPage < totalPages) {
             instance.state.set('currentPage', currentPage + 1);
+            instance.fetchTasks();
         }
     },
 
@@ -81,27 +93,14 @@ Template.mainContainer.events({
         const searchQuery = event.target.value;
         instance.state.set('searchQuery', searchQuery);
         instance.state.set('currentPage', 1);
+        instance.fetchTasks();
     }
 });
 
 Template.mainContainer.helpers({
     tasks() {
-
         const instance = Template.instance();
-
-        const hideCompleted = instance.state.get(HIDE_COMPLETED_STRING);
-        const searchQuery = instance.state.get('searchQuery').toLowerCase();
-        const currentPage = instance.state.get('currentPage');
-
-        if (!isUserLogged()) {
-            return [];
-        }
-
-        const filteredTasks = getFilteredTasks(searchQuery, hideCompleted);
-
-        const skip = (currentPage - 1) * TASK_PER_PAGE;
-
-        return TaskCollection.find(filteredTasks, { skip, limit: TASK_PER_PAGE, sort: { createdAt: -1 } }).fetch();
+        return instance.state.get('tasks');
     },
 
     hideCompleted() {
@@ -112,10 +111,7 @@ Template.mainContainer.helpers({
         if (!isUserLogged()) {
             return '';
         }
-
-        const user = getUser();
-        const userFilter = user ? { userId: user._id } : {};
-        const totalTasks = TaskCollection.find(userFilter).count();
+        const totalTasks = Template.instance().state.get('totalTasks');
 
         return totalTasks ? `${totalTasks}` : '';
     },
@@ -125,11 +121,9 @@ Template.mainContainer.helpers({
             return '';
         }
 
-        const hideCompleted = Template.instance().state.get(HIDE_COMPLETED_STRING);
-        const filteredTasks = getFilteredTasks('', hideCompleted);
-        const incompleteTaskCount = TaskCollection.find({ ...filteredTasks, isChecked: { $ne: true } }).count();
+        const incompleteTasksCount = Template.instance().state.get('incompleteTasksCount');
 
-        return incompleteTaskCount ? `${incompleteTaskCount}` : '';
+        return incompleteTasksCount ? `${incompleteTasksCount}` : '';
     },
 
     isUserLogged() {
@@ -149,15 +143,7 @@ Template.mainContainer.helpers({
     },
 
     totalPages() {
-        const instance = Template.instance();
-
-        const searchQuery = instance.state.get('searchQuery').toLowerCase();
-        const hideCompleted = instance.state.get(HIDE_COMPLETED_STRING);
-
-        const filteredTasks = getFilteredTasks(searchQuery, hideCompleted);
-        const filteredTasksCount = TaskCollection.find(filteredTasks).count();
-
-        return Math.ceil(filteredTasksCount / TASK_PER_PAGE);
+        return Template.instance().state.get('totalPages');
     },
 
     isPreviousPageAvailable() {
@@ -169,25 +155,8 @@ Template.mainContainer.helpers({
         const instance = Template.instance();
 
         const currentPage = instance.state.get('currentPage');
-        const searchQuery = instance.state.get('searchQuery').toLowerCase();
-        const hideCompleted = instance.state.get(HIDE_COMPLETED_STRING);
-
-        const filteredTasks = getFilteredTasks(searchQuery, hideCompleted);
-        const filteredTasksCount = TaskCollection.find(filteredTasks).count();
-        const totalPages = Math.ceil(filteredTasksCount / TASK_PER_PAGE);
+        const totalPages = instance.state.get('totalPages');
 
         return currentPage < totalPages;
     }
-});
-
-Template.form.events({
-    'submit .task-form'(event) {
-        event.preventDefault();
-
-        const text = event.target.text.value;
-
-        Meteor.call('tasks.insert', text);
-
-        event.target.text.value = '';
-    },
 });

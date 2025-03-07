@@ -73,6 +73,9 @@
         "/home/deepkumar/.meteor/packages/meteortesting_mocha/2.1.0/web.browser/runtimeArgs.js",
         "/home/deepkumar/.meteor/packages/meteortesting_mocha/2.1.0/web.browser/server.handleCoverage.js",
         "/home/deepkumar/.meteor/packages/meteortesting_mocha/2.1.0/web.browser/server.js"
+      ],
+      "meteor/session": [
+        "/home/deepkumar/.meteor/packages/session/1.2.0/web.browser/session.js"
       ]
     }
   },
