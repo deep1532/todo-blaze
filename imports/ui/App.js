@@ -41,7 +41,7 @@ Template.mainContainer.onCreated(function mainContainerOnCreated() {
             }
 
             else {
-                this.state.set('tasks', result.tasks);
+                this.state.set('tasks', result.filteredTasks);
                 this.state.set('totalTasks', result.totalTasks);
                 this.state.set('totalPages', result.totalPages);
                 this.state.set('incompleteTasksCount', result.incompleteTasksCount);
